@@ -1,0 +1,51 @@
+{
+  // 复制为 opencode.jsonc 后填写。opencode.jsonc 含密钥，已被 gitignore。
+  "$schema": "https://opencode.ai/config.json",
+
+  "default_agent": "pm-brain",
+  "model": "myapi/deepseek-v4-free#medium",
+
+  "providers": {
+    "myapi": {
+      "name": "Company Internal LLM",
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "http://127.0.0.1:4000/v1",
+        "apiKey": "sk-replace-me"
+      },
+      "models": {
+        "deepseek-v4-free": {
+          "name": "Product Agent Chat",
+          "variants": [{ "id": "medium" }, { "id": "high" }]
+        }
+      }
+    }
+  },
+
+  "mcp": {
+    "servers": {
+      "lark": {
+        "type": "local",
+        "command": [
+          "cmd", "/c", "lark-mcp", "mcp",
+          "-a", "cli_replace_me",
+          "-s", "replace-me-app-secret",
+          "--oauth", "--token-mode", "user_access_token"
+        ]
+      }
+    }
+  },
+
+  "permissions": [
+    { "action": "skill", "resource": "docgen", "effect": "deny" },
+    { "action": "question", "resource": "*", "effect": "deny" },
+    { "action": "webfetch", "resource": "*", "effect": "allow" },
+    { "action": "websearch", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*", "effect": "allow" }
+  ],
+
+  "compaction": {
+    "auto": true,
+    "keep": { "tokens": 15000 }
+  }
+}

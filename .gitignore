@@ -18,7 +18,12 @@ build/
 .env.*
 *.local
 *.pem
+# Live OpenCode config holds API keys and the Feishu app secret.
+opencode.jsonc
+!opencode.example.jsonc
 
 # OpenCode local runtime
 .opencode/cache/
 .opencode/logs/
+# Junction to feishu_bridge/data: logs, bindings, subscriptions, mailbox, workspaces.
+.opencode/data/

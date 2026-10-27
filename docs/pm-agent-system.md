@@ -1,6 +1,6 @@
 # 产品管理系统 · 多 Agent（OpenCode 原生实现）
 
-四层架构在 OpenCode 上的原生落地：**1 个主 Agent（A0-产品大脑）+ 16 个子 Agent（5 模块）+ 18 项 Skills（4 类）+ 数据与知识层**。
+四层架构在 OpenCode 上的原生落地：**1 个主 Agent（A0-产品大脑）+ 16 个业务子 Agent（5 模块）+ 1 个文档生成子 Agent（A61）+ 20 项 Skills（5 类）+ 数据与知识层**。
 指令自上而下（A0 → 子 Agent → Skills），数据自下而上（来源 → 三大库 → Skills/Agent）。
 
 ## 分层映射
@@ -8,8 +8,8 @@
 | 架构层 | 组成 | 代码位置 |
 |---|---|---|
 | ① 核心 Agent 层 | A0-产品大脑（Lead Agent） | `.opencode/agents/pm-brain.md` |
-| ② 子 Agent 层 | 5 模块 · 16 个 | `.opencode/agents/pm-a*.md` |
-| ③ Skills 层 | 4 类 · 18 项 | `.opencode/skills/s*/SKILL.md` |
+| ② 子 Agent 层 | 5 个业务模块 · 16 个，另加终端交付 A61 | `.opencode/agents/pm-a*.md` |
+| ③ Skills 层 | 5 类 · 20 项 | `.opencode/skills/s*/SKILL.md` |
 | ④ 数据与知识层 | 三大库 + 六大来源 | 见下文「数据与知识层」 |
 
 > 本仓库为 **OpenCode 原生实现**（agents + skills）。参考的纯 Python 可运行实现位于
@@ -43,9 +43,15 @@
 | `pm-a53-partner` | 合作伙伴管理智能体 | 支撑 | S21、S22 | 合作伙伴、伙伴、渠道、生态 |
 | `pm-a54-risk` | 风险管理智能体 | 支撑 | S23、S24 | 风险、合规、预警 |
 
+A61 不参与上表的关键词路由，只在成稿时由 A0 最后调用。
+
+| ID | 名称 | 模块 | 调用技能 | 何时调用 |
+|---|---|---|---|---|
+| `pm-a61-deliverable` | 文档生成智能体 | 交付 | S61、S62 | 业务 Agent 全部返回之后；用户要求生成文件、导出、成稿或按模板填写 |
+
 每个子 Agent 通过 `skill` 权限规则实现**能力矩阵固化**：先 `deny *`，再仅 `allow` 其被映射的技能。子 Agent 禁止再启动子 Agent（防递归）。
 
-## ③ Skills 层（18 项 · 4 类）
+## ③ Skills 层（20 项 · 5 类）
 
 | 类别 | 技能 ID |
 |---|---|
@@ -53,6 +59,7 @@
 | 核心能力 | `s21-partner-evaluation`、`s22-partner-management`、`s23-risk-assessment`、`s24-risk-monitoring`、`s25-support-evaluation`、`s26-knowledge-management` |
 | 研发与运营 | `s31-business-plan`、`s32-product-packaging`、`s33-promotion-materials`、`s34-marketing-copy` |
 | 工具类（DIGEX） | `s41-doc-interpretation`、`s42-meeting-minutes`、`s43-pm-platform`、`s44-bi-metrics`、`s45-test-data` |
+| 交付 | `s61-template-adapt`、`s62-file-emit` |
 
 ### 能力矩阵（Agent × Skill）
 
@@ -77,6 +84,8 @@
 
 > 复用度：S41 被 4 个 Agent 复用（最高）；S13、S31、S34、S44 各被 3 个复用。
 
+A61 不进入上面的 16×18 矩阵。它只允许 S61、S62：S61 把业务 Agent 的交付片段填进模板，S62 把结果写入 `deliverables/`。业务正文仍由对应的 A11–A54 生成。
+
 ## ④ 数据与知识层
 
 | 库 | 定位 | 主要消费方 |
@@ -95,6 +104,8 @@
 
 A0 将命中 `A11/A13/A21/A23/A54`，按 洞察→研发→发布→支撑 顺序执行，并聚合出 Markdown《产品任务报告》
 （任务元信息 → 一、执行过程 → 二、综合结论 → 三、建议下一步 → 四、技能调用统计）。
+
+若用户同时要求成稿，例如「按上传的模板生成需求文档」，A0 先调用对应业务 Agent（此例为 A11）阅读上传材料并返回交付片段，再调用 A61 把片段写入 `deliverables/`。报告第五节只记录文件路径和未填槽位。
 
 也可直接点名某个子 Agent，例如：`使用 pm-a54-risk 子 Agent 评估该产品的合规风险`。
 

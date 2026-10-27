@@ -6,7 +6,7 @@
 <title>产品管理系统 · 多 Agent 架构</title>
 <style>
   :root{
-    --insight:#2563eb; --dev_release:#059669; --operations:#ea580c; --sales:#7c3aed; --support:#0d9488;
+    --insight:#2563eb; --dev_release:#059669; --operations:#ea580c; --sales:#7c3aed; --support:#0d9488; --deliver:#b45309;
     --basic:#0891b2; --core:#e11d48; --rd_ops:#65a30d; --digex:#ca8a04;
     --ink:#0f172a; --sub:#64748b; --line:#e2e8f0; --bg:#f1f5f9;
   }
@@ -185,7 +185,7 @@
 
     <!-- 第 2 层：子 Agent 层 -->
     <section class="layer">
-      <div class="layer-label"><b>② 子 Agent 层</b><span>16 个 · 5 模块</span></div>
+      <div class="layer-label"><b>② 子 Agent 层</b><span>17 个 · 6 模块</span></div>
       <div class="layer-body modules-row" id="modulesRow"></div>
     </section>
 
@@ -196,7 +196,7 @@
 
     <!-- 第 3 层：Skills 层 -->
     <section class="layer" data-id="skillsLayer" id="skillsLayer">
-      <div class="layer-label"><b>③ Skills 层</b><span>18 项 · 4 类</span></div>
+      <div class="layer-label"><b>③ Skills 层</b><span>20 项 · 5 类</span></div>
       <div class="layer-body cats-row" id="catsRow"></div>
     </section>
 
@@ -244,7 +244,7 @@
 
 <script>
 /* ================================================================
- * 数据定义：44 个节点（1 主Agent + 16 子Agent + 18 Skills + 3 库 + 6 来源）
+ * 数据定义：47 个节点（1 主Agent + 17 子Agent + 20 Skills + 3 库 + 6 来源）
  * ================================================================ */
 const DATA = {
   modules: [
@@ -274,6 +274,9 @@ const DATA = {
       { id:"A53", name:"合作伙伴管理智能体", skills:["S21","S22"] },
       { id:"A54", name:"风险管理智能体",     skills:["S23","S24"] },
     ]},
+    { key:"deliver", name:"交付", agents:[
+      { id:"A61", name:"文档生成智能体", skills:["S61","S62"] },
+    ]},
   ],
   skillCats: [
     { key:"basic", name:"基础能力", grid:"", skills:[
@@ -302,6 +305,10 @@ const DATA = {
       { id:"S44", name:"BI大屏数据调取skills",   libs:["数据库"] },
       { id:"S45", name:"测试反馈数据读取skills", libs:["数据库"] },
     ]},
+    { key:"deliver", name:"交付", grid:"", skills:[
+      { id:"S61", name:"模板适配skills", libs:["知识库"] },
+      { id:"S62", name:"文件落盘skills", libs:["知识库"] },
+    ]},
   ],
   libraries: [
     { id:"知识库",  sub:"文档 · 飞书信息 · 治理后的个人经验" },
@@ -322,7 +329,7 @@ const DATA = {
     { id:"个人经验",     type:"人工" },
   ],
   desc: {
-    A0:"全局协调者：接收产品目标，拆解任务并路由给子 Agent，聚合各模块结果，维护全局上下文与决策记忆。",
+    A0:"全局协调者：接收产品目标，拆解任务并路由给业务子 Agent。需要成稿时，等业务结果返回后再调用 A61 套模板落文件。",
     A11:"收集并结构化产品需求，输出需求池与优先级建议。",
     A12:"跟踪竞品动态，输出竞品对比矩阵与差异化机会。",
     A13:"分析市场趋势与行业数据，输出趋势研判报告。",
@@ -339,6 +346,7 @@ const DATA = {
     A52:"沉淀、检索与分发组织知识。",
     A53:"评估与管理合作伙伴关系。",
     A54:"识别、评估并持续监控业务风险。",
+    A61:"终端文档生成：只把上游交付片段填入模板并写入 deliverables/，不重新生成业务内容。",
     S11:"对原始需求进行清洗、分类、优先级评估，输出结构化需求文档。",
     S12:"构建竞品对比维度，输出竞品矩阵与策略建议。",
     S13:"设计调研框架，汇总市场规模、用户画像与机会点。",
@@ -357,6 +365,8 @@ const DATA = {
     S43:"读写产品管理平台的需求数据与状态。",
     S44:"从 FineBI 拉取指标数据并解读。",
     S45:"读取测试执行与缺陷数据。",
+    S61:"把业务子 Agent 的交付片段填入用户模板或默认提纲，不新写业务内容。",
+    S62:"把填好的正文写入 deliverables/，不改内容。",
     "知识库":"结构化沉淀产品知识文档、飞书进程信息与经治理的个人经验，支持标签检索。",
     "数据库":"汇聚产品管理平台、工单系统、FineBI 的结构化业务数据。",
     "skills库":"技能定义、版本与调用统计的存储，由 Skills 层运行沉淀。",
@@ -388,7 +398,7 @@ function makeNode(id, badge, name, cls, styleVar, extraHTML=""){
 }
 
 function render(){
-  /* 第 2 层：5 个模块分组 */
+  /* 第 2 层：6 个模块分组 */
   const mrow = $("#modulesRow");
   DATA.modules.forEach(m => {
     const g = document.createElement("div");
@@ -407,7 +417,7 @@ function render(){
     mrow.appendChild(g);
   });
 
-  /* 第 3 层：4 个技能类别 */
+  /* 第 3 层：5 个技能类别 */
   const crow = $("#catsRow");
   DATA.skillCats.forEach(c => {
     const g = document.createElement("div");
