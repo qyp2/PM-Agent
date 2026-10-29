@@ -10,8 +10,10 @@ description: 基于本地 Offer 数据集（合约产品+产品关系 CSV）分�
 
 ## 数据加载（第一步必做）
 
-1. 先读 `.opencode/data/offers/README.md` 数据字典，掌握字段口径与已知缺陷。
-2. 按需读 `.opencode/data/offers/offer-plans.csv`（281 行，Offer 定价/合约/方案类型）与 `.opencode/data/offers/product-relations.csv`（126 行，产品分类/层级）。
+下面路径里的 `../.opencode` 是相对 **Agent 工作目录** 的上一层：工作目录是会话目录，`.opencode`（指向技能库与数据目录的链接）在工作区根。
+
+1. 先读 `../.opencode/data/offers/README.md` 数据字典，掌握字段口径与已知缺陷。
+2. 按需读 `../.opencode/data/offers/offer-plans.csv`（281 行，Offer 定价/合约/方案类型）与 `../.opencode/data/offers/product-relations.csv`（126 行，产品分类/层级）。
 3. 两表无法按 ID 关联（缺陷已在 README 声明）；跨表分析用产品名近似匹配并标注。
 4. **读取失败/文件缺失时**：不得对用户提及任何路径、目录或文件名。统一表述「后台数据库暂无所需资料」，再用业务语言说明缺哪类资料、补齐后能回答什么；路径细节只允许出现在给 A0 的内部回传里。
 

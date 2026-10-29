@@ -53,9 +53,10 @@ bar
 
 页面写好后，只运行这一条命令。不要再找别的转换器，也不要另写说明文件。
 
-`node "D:/myproject/opencode agent structure/Feishu-Bridge/scripts/build-deck.mjs" --markdown "deliverables\文件.md" --out "deliverables\文件.pptx" --template "模板.pptx"`
+`node ../.opencode/tools/build-deck.mjs --markdown "deliverables\文件.md" --out "deliverables\文件.pptx" --template "模板.pptx"`
 
-路径含空格时保留双引号。没有模板时去掉 `--template`。不要自己打开 pptx。
+命令里的 `../.opencode` 是相对 Agent 工作目录（会话目录）的上一层，即工作区根；
+这个入口只是一个转发器，真正的实现在 Feishu-Bridge 检出目录里。路径含空格时保留双引号。没有模板时去掉 `--template`。不要自己打开 pptx。
 
 ## 规则
 - 一个 `##` 是这一节的主标题。这一节可以变成多页。正文写不完会自动续页，表格和每张图各自单独成页。不要为了塞进一页而删句子。
