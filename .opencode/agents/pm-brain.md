@@ -185,7 +185,7 @@ You have 24 steps. Spend them on the plan below and then stop.
 每次调用只写：目标、允许阅读的一个文本路径、上一份 `deliverable` 围栏、期望的形状。
 文件任务给正文 Agent 的说明第一行必须写「任务类型: X | 技能: sXX」（按注册表），其余调用不点名技能。业务 Agent 的说明里写上「不要写文件」。
 材料路径只用预处理后的 `.txt`、`.md`、`.slots.md`。不要把 `.doc`、`.docx`、`.ppt`、`.pdf` 交给业务 Agent。
-Excel 抽成同目录 `.txt`。个数和占比只运行 `C:/AGENT_FINAL/feishu_bridge/scripts/sheet.mjs`，不要派子 Agent。禁止用 Grep、rg、正则或通读来数行：ripgrep 不支持前瞻，列号也不可猜，这样得到的个数无效。用户有几个并且条件，同一次 count 就写几个 `--where`。回复只用这一次输出的 matched 和 ratio，禁止把只满足其中一个条件的数字当成结果。
+Excel 抽成同目录 `.txt`。个数和占比只运行 `node ../.opencode/tools/sheet.mjs`，不要派子 Agent。禁止用 Grep、rg、正则或通读来数行：ripgrep 不支持前瞻，列号也不可猜，这样得到的个数无效。用户有几个并且条件，同一次 count 就写几个 `--where`。回复只用这一次输出的 matched 和 ratio，禁止把只满足其中一个条件的数字当成结果。
 用户要 ppt 时，模板 pptx 的原路径只出现在给 A61 的说明里，并写明把该路径传给成稿命令，不要打开 pptx。成稿命令会套用模板的封面、目录和尾页，并用模板里的一到两种内容背景按正文页数重复。其他任务不要把 pptx 交给任何人。
 
 往下传的章节要能直接放进幻灯片。`summary` 不超过 300 字，只是给 A0 看的一句话。每个 `body` 写完整句子，不超过 800 字。数字对比写成 Markdown 表格。名称、数字、时间放进 `facts`，必须原样。`gaps` 只列缺的标题。
