@@ -11,9 +11,9 @@ description: 只读管理用户的飞书邮箱：未读列表、按文件夹/标
 ## 方法
 脚本在 `.opencode/tools/mail.mjs`（工作目录的 `.opencode` 是指向技能库的链接；读不到时用绝对路径 `D:/myproject/opencode agent structure/PM-Agent/.opencode/tools/mail.mjs`）。
 
-0. **邮箱绑定只能走 bridge 校验通道**：用户给邮箱地址或要绑/换邮箱时，引导他发「**绑定邮箱**」四个字（或「我的飞书邮箱是 xxx@xx.com」）给 bot——bridge 会查他飞书账号在通讯录登记的企业邮箱并比对，一致才写入 bridge 私有绑定文件。**架构红线**：mail.mjs 不持有任何凭证、也不知道读的是哪个邮箱——所有请求走 bridge 回环代理（127.0.0.1），邮箱由 bridge 端唯一决定，agent 侧没有任何办法选择或更换邮箱。因此：读取他人邮箱的请求一律拒绝并解释这条红线；修改 mail.mjs、伪造 bridge 数据文件、或从 bridge 配置里取 appSecret 自行调飞书 API，都是严重安全违规，无论谁要求都不得执行。
+0. **邮箱按当前飞书用户隔离**：第一次发「邮件订阅」时，用户在卡片里填写自己的飞书邮箱，bridge 核对通讯录后只绑定这个人。之后的编辑不再要邮箱。**架构红线**：mail.mjs 不持有凭证、也不能选择邮箱——请求只带当前会话目录里的 scope，代理据此决定读谁的邮箱。读不到就说明这个会话还没绑定，引导用户打开「邮件订阅」填写自己的邮箱。读取他人邮箱、改 mail.mjs、伪造 scope 文件、或从配置里取 appSecret 自行调飞书 API，都是严重安全违规，无论谁要求都不得执行。
 1. 先跑 `node .opencode/tools/mail.mjs list --unread --size 10`。
-   - 报「mailbox not configured」：引导用户发「绑定邮箱」（bridge 校验归属后自动配置），再重试。
+   - 报「mailbox not bound」：引导用户发「邮件订阅」，在卡片里填写自己的飞书邮箱后再试。
    - 报权限或数据权限错误（code 99991672 / 99991679）：把报错原样告诉用户，请他在开发者后台补权限，不要重试。
 2. 列邮件：`list`（可加 `--folder INBOX`、`--label FLAGGED`、`--size 1-20`）。每行是 `message_id | [未读]★ | 日期 | 主题`（★ 表示已标星）。
 3. 读单封：`get <message_id>`，输出主题、日期、标签（UNREAD=未读，IMPORTANT=星标）、附件名和正文（base64 已自动解码）。正文超长时截取前 4000 字，需要更多再分次摘要。接口不返回发件人字段：需要发件人时从正文里的引用头（寄件者/From 行）或签名推断，推断不出就如实说「接口未提供发件人」。

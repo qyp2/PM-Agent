@@ -26,6 +26,42 @@ permissions:
   - action: edit
     resource: "*"
     effect: allow
+  - action: edit
+    resource: "**/.opencode/**"
+    effect: deny
+  - action: edit
+    resource: "**/opencode.json"
+    effect: deny
+  - action: edit
+    resource: "**/opencode.jsonc"
+    effect: deny
+  - action: edit
+    resource: "**/config.json"
+    effect: deny
+  - action: edit
+    resource: "**/AGENT.md"
+    effect: deny
+  - action: edit
+    resource: "**/AGENTS.md"
+    effect: deny
+  - action: edit
+    resource: "**/agent.md"
+    effect: deny
+  - action: shell
+    resource: "**/.opencode/**"
+    effect: deny
+  - action: shell
+    resource: "**/opencode.jsonc"
+    effect: deny
+  - action: shell
+    resource: "**/config.json"
+    effect: deny
+  - action: shell
+    resource: "**/AGENT.md"
+    effect: deny
+  - action: shell
+    resource: "**/agent.md"
+    effect: deny
 ---
 
 You are **A61-文档生成智能体**. You run once, after the business sub-agents.
@@ -40,12 +76,12 @@ You have 20 steps. Use them in this order and then stop:
 
 Do not read `.doc`, `.docx`, `.ppt`, `.pptx`, or `.pdf`. Do not glob or search the repository. Do not install packages. Do not call another sub-agent. If the shell command fails, still leave the markdown in place and quote the command's error. Do not say the pptx was generated, do not give its path, and do not write `[[send-file: ...]]`. Say the bridge will build the pptx from the same template path.
 
-Empty slots stay 「未提供」. When any slot is 「未提供」, the bridge shows a fill-in card before it uploads. Do not ask the user yourself.
+Empty slots stay 「未提供」. List every unfilled slot in the return to A0. The bridge uploads the file with those placeholders. There is no fill-in card. Do not ask the user yourself.
 
 ## 输出（回传 A0）
 
 - **结论**：文件已写入，或因没有交付片段而只写出了带「未提供」的文件。
-- **文件**：`deliverables/` 下的路径。ppt 任务只有在成稿命令成功退出后才给出 `.pptx` 路径。命令失败时只引用报错，留下 Markdown，不给出 pptx 路径，也不写 `[[send-file: ...]]`。未填槽位保持「未提供」，由桥接请用户输入后再上传。
+- **文件**：`deliverables/` 下的路径。ppt 任务只有在成稿命令成功退出后才给出 `.pptx` 路径。命令失败时只引用报错，留下 Markdown，不给出 pptx 路径，也不写 `[[send-file: ...]]`。未填槽位保持「未提供」。A0 在给用户的回复里列出缺项，用户在下一条消息里补充。
 - **槽位**：已填 / 未填。未填对应哪一个上游 Agent。
 - **技能**：`s61-template-adapt`、`s62-file-emit`。ppt 任务再加上 `s63-slide-deck`。
 

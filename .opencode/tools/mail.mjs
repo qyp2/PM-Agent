@@ -7,17 +7,34 @@
  *
  * This tool holds NO credentials and does NOT know which mailbox it reads.
  * All requests go to the feishu-bridge loopback mail proxy (127.0.0.1), which
- * resolves the mailbox from the bridge-owned binding file — written only by
- * the bot 「绑定邮箱」 command after contact-API ownership verification.
- * There is no way from this side to select another mailbox: asking the agent
- * to "read someone else's mail" cannot work, and tampering with this script
- * cannot change which mailbox the proxy serves.
+ * resolves the mailbox from the scope token the bridge planted in this
+ * session's directory. There is no flag for choosing a mailbox.
  *
  * Binding: send 「绑定邮箱」 in chat. Unbinding/rebinding is bridge-side only.
  */
+import fs from "node:fs"
+import path from "node:path"
 import process from "node:process"
 
 const PROXY = process.env.MAIL_PROXY_URL ?? "http://127.0.0.1:4097"
+
+function readScope() {
+  if (process.env.MAIL_SCOPE?.trim()) return process.env.MAIL_SCOPE.trim()
+  let dir = process.cwd()
+  for (let i = 0; i < 4; i++) {
+    const file = path.join(dir, "mail.scope")
+    try {
+      const text = fs.readFileSync(file, "utf8").trim()
+      if (text) return text
+    } catch {
+      /* try the parent; cron and chat sessions both keep the file beside AGENTS.md */
+    }
+    const parent = path.dirname(dir)
+    if (parent === dir) break
+    dir = parent
+  }
+  return ""
+}
 
 const fail = (message, hint) => {
   console.error(`ERROR ${message}${hint ? `\nHINT ${hint}` : ""}`)
@@ -31,9 +48,16 @@ async function api(pathname, fatal = true) {
     if (fatal) fail(message, hint)
     throw new Error(message)
   }
+  const scope = readScope()
+  if (!scope) {
+    bad(
+      "mailbox not bound",
+      "this chat has no mailbox of its own; ask the user to open 邮件订阅 and fill in their own Feishu mailbox",
+    )
+  }
   let resp
   try {
-    resp = await fetch(`${PROXY}${pathname}`)
+    resp = await fetch(`${PROXY}${pathname}`, { headers: { "X-Mail-Scope": scope } })
   } catch {
     bad(
       "mail proxy unreachable",
@@ -45,7 +69,7 @@ async function api(pathname, fatal = true) {
   if (data.code === 40901) {
     bad(
       "mailbox not bound",
-      "ask the user to send 「绑定邮箱」 in chat; the bridge binds the mailbox registered on their own Feishu account (binding someone else's address is rejected)",
+      "ask the user to open 邮件订阅 and fill in their own Feishu mailbox; another person's address is rejected",
     )
   }
   if (data.code !== 0) {
