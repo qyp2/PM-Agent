@@ -41,7 +41,22 @@
     { "action": "question", "resource": "*", "effect": "deny" },
     { "action": "webfetch", "resource": "*", "effect": "allow" },
     { "action": "websearch", "resource": "*", "effect": "allow" },
-    { "action": "read", "resource": "*", "effect": "allow" }
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "edit", "resource": "**/.opencode/**", "effect": "deny" },
+    { "action": "edit", "resource": "**/opencode.json", "effect": "deny" },
+    { "action": "edit", "resource": "**/opencode.jsonc", "effect": "deny" },
+    { "action": "edit", "resource": "**/config.json", "effect": "deny" },
+    { "action": "edit", "resource": "**/AGENT.md", "effect": "deny" },
+    { "action": "edit", "resource": "**/AGENTS.md", "effect": "deny" },
+    { "action": "edit", "resource": "**/agent.md", "effect": "deny" },
+    { "action": "shell", "resource": "**/.opencode/**", "effect": "deny" },
+    { "action": "shell", "resource": "**/opencode.jsonc", "effect": "deny" },
+    { "action": "shell", "resource": "**/config.json", "effect": "deny" },
+    { "action": "shell", "resource": "**/AGENT.md", "effect": "deny" },
+    { "action": "shell", "resource": "**/agent.md", "effect": "deny" },
+    { "action": "shell", "resource": "*sheet.mjs*", "effect": "allow" },
+    { "action": "grep", "resource": "*inbox*", "effect": "deny" },
+    { "action": "grep", "resource": "*file-cache*", "effect": "deny" }
   ],
 
   "compaction": {
