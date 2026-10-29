@@ -53,7 +53,7 @@ bar
 
 页面写好后，只运行这一条命令。不要再找别的转换器，也不要另写说明文件。
 
-`node C:\AGENT_FINAL\feishu_bridge\scripts\build-deck.mjs --markdown "deliverables\文件.md" --out "deliverables\文件.pptx" --template "模板.pptx"`
+`node "D:/myproject/opencode agent structure/Feishu-Bridge/scripts/build-deck.mjs" --markdown "deliverables\文件.md" --out "deliverables\文件.pptx" --template "模板.pptx"`
 
 路径含空格时保留双引号。没有模板时去掉 `--template`。不要自己打开 pptx。
 

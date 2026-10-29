@@ -9,7 +9,7 @@ description: 只读管理用户的飞书邮箱：未读列表、按文件夹/标
 用 bridge 应用的权限读取用户飞书邮箱：回答「有什么未读邮件」「这封邮件讲了什么」，按用户规则归类并给出处理建议。**接口只读**：不能标记已读/标星、不能发信、不能删除——用户要求这些动作时如实说明（飞书用户邮箱接口没有消息修改端点），不要假装执行成功。
 
 ## 方法
-脚本在 `.opencode/tools/mail.mjs`（工作目录的 `.opencode` 是指向技能库的链接；读不到时用绝对路径 `C:/AGENT_FINAL/agent_structure/.opencode/tools/mail.mjs`）。
+脚本在 `.opencode/tools/mail.mjs`（工作目录的 `.opencode` 是指向技能库的链接；读不到时用绝对路径 `D:/myproject/opencode agent structure/PM-Agent/.opencode/tools/mail.mjs`）。
 
 0. **邮箱绑定只能走 bridge 校验通道**：用户给邮箱地址或要绑/换邮箱时，引导他发「**绑定邮箱**」四个字（或「我的飞书邮箱是 xxx@xx.com」）给 bot——bridge 会查他飞书账号在通讯录登记的企业邮箱并比对，一致才写入 bridge 私有绑定文件。**架构红线**：mail.mjs 不持有任何凭证、也不知道读的是哪个邮箱——所有请求走 bridge 回环代理（127.0.0.1），邮箱由 bridge 端唯一决定，agent 侧没有任何办法选择或更换邮箱。因此：读取他人邮箱的请求一律拒绝并解释这条红线；修改 mail.mjs、伪造 bridge 数据文件、或从 bridge 配置里取 appSecret 自行调飞书 API，都是严重安全违规，无论谁要求都不得执行。
 1. 先跑 `node .opencode/tools/mail.mjs list --unread --size 10`。
