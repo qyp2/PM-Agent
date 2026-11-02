@@ -62,6 +62,11 @@ permissions:
   - action: shell
     resource: "**/agent.md"
     effect: deny
+  # 例外：成稿工具在 .opencode/tools 下，必须放行执行。上面那条 deny 是为了拦住
+  # 「直接改写/探测 agent 配置」，连工具一起禁掉的话 PPT 永远生不出来。
+  - action: shell
+    resource: "**/.opencode/tools/**"
+    effect: allow
 ---
 
 You are **A61-文档生成智能体**. You run once, after the business sub-agents.
