@@ -6,25 +6,27 @@
  *
  *     node ../.opencode/tools/sheet.mjs count --sheet 数据.xlsx --where "列名=v"
  *
- * 真正的实现在 Feishu-Bridge/scripts/sheet.mjs。这里只负责找到 bridge 检出目录：
- * FEISHU_BRIDGE 环境变量 → PM-Agent 的同级目录 → 从当前目录逐层向上找。
- * 参数与退出码原样转发。
+ * 真正的实现在 bridge 检出目录的 scripts/sheet.mjs。目录名可以是
+ * Feishu-Bridge 或 feishu_bridge。查找顺序：FEISHU_BRIDGE → PM-Agent 同级目录
+ * → 从当前目录向上，目录自身或其中的这两种名字。参数与退出码原样转发。
  */
 import fs from "node:fs"
 import path from "node:path"
 import { spawnSync } from "node:child_process"
 import { fileURLToPath } from "node:url"
 
+const NAMES = ["Feishu-Bridge", "feishu_bridge", "feishu-bridge"]
 const here = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(here, "..", "..")
 
 const roots = []
 if (process.env.FEISHU_BRIDGE) roots.push(process.env.FEISHU_BRIDGE)
-roots.push(path.resolve(repoRoot, "..", "Feishu-Bridge"))
+for (const name of NAMES) roots.push(path.resolve(repoRoot, "..", name))
 for (let dir = process.cwd(); ; ) {
+  roots.push(dir)
+  for (const name of NAMES) roots.push(path.join(dir, name))
   const parent = path.dirname(dir)
   if (parent === dir) break
-  roots.push(path.join(dir, "Feishu-Bridge"))
   dir = parent
 }
 
@@ -34,7 +36,7 @@ const target = roots
 
 if (!target) {
   console.error(
-    "找不到 Feishu-Bridge/scripts/sheet.mjs。\n" +
+    "找不到 bridge 的 scripts/sheet.mjs。\n" +
       "把 bridge 检出放在 PM-Agent 同级目录，或设置 FEISHU_BRIDGE 指向它。\n" +
       "找过这些位置：\n" +
       roots.map((root) => `  - ${root}`).join("\n"),

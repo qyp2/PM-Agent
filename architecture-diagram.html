@@ -263,9 +263,9 @@ const DATA = {
       { id:"A32", name:"用户反馈智能体", skills:["S41"] },
     ]},
     { key:"sales", name:"销售", agents:[
-      { id:"A41", name:"销售线索智能体",   skills:["S13","S33"] },
+      { id:"A41", name:"销售线索智能体",   skills:["S13"] },
       { id:"A42", name:"销售跟进智能体",   skills:["S31","S41"] },
-      { id:"A43", name:"销售转化智能体",   skills:["S31","S34"] },
+      { id:"A43", name:"销售转化智能体",   skills:["S31","S32","S33","S34"] },
       { id:"A44", name:"销售业绩分析智能体", skills:["S44"] },
     ]},
     { key:"support", name:"支撑", agents:[
@@ -295,7 +295,7 @@ const DATA = {
     { key:"rd_ops", name:"研发与运营", grid:"", skills:[
       { id:"S31", name:"商业计划书撰写skills", libs:["知识库"] },
       { id:"S32", name:"产品化包装材料skills", libs:["知识库"] },
-      { id:"S33", name:"产品宣传材料skills",   libs:["知识库"] },
+      { id:"S33", name:"产品退出材料",   libs:["知识库"] },
       { id:"S34", name:"推广文案skills",       libs:["知识库"] },
     ]},
     { key:"digex", name:"工具类（DIGEX）", grid:"", skills:[
@@ -358,7 +358,7 @@ const DATA = {
     S26:"知识的采集、去重、标签化与检索分发。",
     S31:"生成结构化商业计划书（市场/产品/财务/风险）。",
     S32:"产出产品定位、卖点与包装物料。",
-    S33:"制作宣传册、介绍页等对外材料。",
+    S33:"撰写产品退出/退市评审材料（PPT 或 Word）。",
     S34:"生成多渠道推广文案与传播素材。",
     S41:"解析飞书文档/进程信息，抽取结构化要点。",
     S42:"从会议记录生成纪要与待办事项。",

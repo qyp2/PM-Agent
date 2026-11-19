@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "owner": "product-intro",
+  "updated": "2026-11-12",
+  "contract": "A0 只读本目录并注入产品事实；只有 product-intro 可以修改本目录。",
+  "products": [
+    {
+      "id": "product-intro-01",
+      "name": "移动安全管家",
+      "aliases": ["移动安全管家", "安全管家", "移动安全", "Mobile Security Steward", "mobile-security-steward", "反诈", "防诈骗", "骚扰拦截", "垃圾短信", "通信安全", "隐私防护"],
+      "skill": "product-intro-01",
+      "path": "product-skills/product-intro-01/SKILL.md",
+      "status": "待维护",
+      "updated": "2026-11-12",
+      "summary": "移动安全管家（Mobile Security Steward）动态产品事实源，含 10 大知识模块、状态标签与变更追踪；框架已建，关键字段待补充。"
+    },
+    {
+      "id": "product-intro-02",
+      "name": "家庭看护",
+      "aliases": ["家庭看护", "家庭看护赛道", "移动看家", "看家", "家庭安防", "摄像头", "云回看"],
+      "skill": "product-intro-02",
+      "path": "product-skills/product-intro-02/SKILL.md",
+      "status": "待维护",
+      "updated": "2026-11-12",
+      "summary": "家庭看护产品线的产品介绍。当前为骨架，关键字段待补充。"
+    },
+    {
+      "id": "product-intro-03",
+      "name": "语音连接",
+      "aliases": ["语音连接", "语音业务", "语音产品", "固话", "固网语音", "通话", "号卡语音"],
+      "skill": "product-intro-03",
+      "path": "product-skills/product-intro-03/SKILL.md",
+      "status": "待维护",
+      "updated": "2026-11-12",
+      "summary": "语音连接产品线的产品介绍。当前为骨架，关键字段待补充。"
+    },
+    {
+      "id": "product-intro-04",
+      "name": "移动优享",
+      "aliases": ["移动优享", "优享", "优享套餐", "移动套餐", "流量套餐", "5G 套餐", "5G套餐"],
+      "skill": "product-intro-04",
+      "path": "product-skills/product-intro-04/SKILL.md",
+      "status": "待维护",
+      "updated": "2026-11-12",
+      "summary": "移动优享产品线的产品介绍。当前为骨架，关键字段待补充。"
+    }
+  ]
+}

@@ -3,7 +3,6 @@ description: 竞品分析智能体（A12）— 联网检索竞品实时数据，
 mode: subagent
 model: myapi/deepseek-v4-free#medium
 color: "#2563eb"
-steps: 12
 permissions:
   - action: edit
     resource: "*"
@@ -68,9 +67,7 @@ sections:
 gaps: []
 ```
 
-## 步数与材料
-
-最多 12 步，按顺序做完就停：
+## 材料
 
 1. 按上面「调用技能」段的规则加载技能，每个只加载一次。
 2. 任务里若已有摘要 `deliverable`，先原样收下 `facts`。任务里如果还有 `.txt` 或 `.md`，再读一次，把事实写成完整句子。每一节不超过 800 字。数字对比另写一个 Markdown 表格。不要把事实删成一句空话。
@@ -78,7 +75,7 @@ gaps: []
 4. 联网检索：按 S12 信息源优先级对每个对手做 1–2 轮 websearch；关键数字用 webfetch 打开原文核对，把「数字+来源+时点」追加进 `facts`。
 5. 立刻回传这一份摘要。结论保持一句话。
 
-不要读取 `.doc`、`.docx`、`.ppt`、`.pptx`、`.pdf`。不要用 Glob 或搜索扫目录。不要写文件。不要调用其他子 Agent。步数不够时，用已经得到的内容写 `deliverable`，缺的标题放进 `gaps`。
+不要读取 `.doc`、`.docx`、`.ppt`、`.pptx`、`.pdf`。不要用 Glob 或搜索扫目录。不要写文件。不要调用其他子 Agent。材料不足时，用已经得到的内容写 `deliverable`，缺的标题放进 `gaps`。
 
 ## 约束
 - 只做竞品域分析；不设计产品、不定价（交 A23/A43）；展会、机构动向、行业活动类商机交 A81。
