@@ -95,6 +95,12 @@ if (!Array.isArray(spec.slides) || spec.slides.length === 0) {
   fail("EMPTY_DECK", "the deck has no slides; check that the markdown has `##` sections.");
 }
 
+// Date stamp on the cover (2026.11.23). Override with --date for a fixed value.
+if (!spec.meta) {
+  const stamp = options.date ? String(options.date) : new Date().toISOString().slice(0, 10);
+  spec.meta = stamp.replaceAll("-", ".");
+}
+
 const outOption = options.out ? String(options.out) : `deliverables/${sourceName || "deck"}.pptx`;
 const outPath = path.isAbsolute(outOption) ? outOption : path.resolve(process.cwd(), outOption);
 if (path.extname(outPath).toLowerCase() !== ".pptx") {

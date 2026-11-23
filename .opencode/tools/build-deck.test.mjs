@@ -91,6 +91,68 @@ test("parseDeckMarkdown continues long lists and keeps table headers", () => {
   assert.match(tablePages[1].title, /（续）$/);
 });
 
+test("parseDeckMarkdown turns card, metric, step and quote syntax into designed pages", () => {
+  const markdown = [
+    "# 复盘",
+    "",
+    "## 关键数字",
+    "",
+    "- 1,633万 三年 ARR",
+    "- 4–5个月 回本周期",
+    "- 46% 家庭占比",
+    "",
+    "> 结论：先把门禁补齐再放量",
+    "",
+    "## 闭环",
+    "",
+    "1. 问数：一句话把问题转成查询",
+    "2. 出图：30 秒给出可解释图表",
+    "3. 推送：按周推到群与看板",
+    "",
+    "## 主线",
+    "",
+    "### 订阅为体",
+    "",
+    "按坐席年付，覆盖 60% 收入",
+    "",
+    "### 用量为阀",
+    "",
+    "超量按次计费，抑制滥用",
+    "",
+    "---",
+    "",
+    "## 风险",
+    "",
+    "- R1 竞品免费化挤压付费卖点",
+  ].join("\n");
+
+  const spec = parseDeckMarkdown(markdown, { title: "复盘" });
+  const kinds = spec.slides.map((slide) => slide.layout);
+
+  assert.ok(kinds.includes("metrics"), "number-first bullets become metric cards");
+  assert.equal(kinds.filter((kind) => kind === "steps").length, 1);
+  assert.equal(kinds.filter((kind) => kind === "columns").length, 1);
+  assert.equal(kinds.filter((kind) => kind === "section").length, 1);
+  assert.equal(kinds.filter((kind) => kind === "bullets").length, 1);
+
+  const metrics = spec.slides.find((slide) => slide.layout === "metrics");
+  assert.deepEqual(metrics.metrics[0], { value: "1,633万", label: "三年 ARR" });
+  assert.equal(metrics.callout.label, "结论", "the > quote becomes the bottom callout");
+  assert.match(metrics.callout.text, /门禁补齐/);
+
+  const columns = spec.slides.find((slide) => slide.layout === "columns");
+  assert.equal(columns.columns.length, 2);
+  assert.equal(columns.columns[0].heading, "订阅为体");
+
+  const steps = spec.slides.find((slide) => slide.layout === "steps");
+  assert.equal(steps.steps[0].title, "问数");
+  assert.match(steps.steps[0].detail, /转成查询/);
+
+  const divider = spec.slides.find((slide) => slide.layout === "section");
+  assert.equal(divider.title, "风险", "a trailing --- opens the next section");
+  assert.equal(divider.index, 4);
+});
+
 test("build-deck renders the markdown through the bundled master", async () => {
   const spec = parseDeckMarkdown(SAMPLE);
   const masterPackage = await readMasterPackage(process.cwd(), undefined, "pptx");
