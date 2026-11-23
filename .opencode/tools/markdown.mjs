@@ -23,6 +23,7 @@ const SUBTITLE_MAX = 28;
 const LEAD_MAX = 64;
 const MAX_CARDS = 3;
 const MAX_METRICS = 4;
+const CLOSING_HEADING = /^(结尾|结束|结语|致谢|谢谢|closing|the end)$/i;
 
 function stripInline(value) {
   return String(value ?? "")
@@ -77,16 +78,18 @@ function parseChart(header, lines) {
 }
 
 const METRIC_PATTERN =
-  /^([￥$€]?\d[\d,.]*\s*(?:%|‰|万|亿|千|倍|个月|月|天|周|年|人|次|万元|亿元|pt|pp)?)\s*[：:，,]?\s*(.+)$/;
+  /^([约近超]?\s*[￥$€]?\d[\d,./–~\-]*\s*(?:%|‰|万|亿|千|倍|个月|月|天|周|年|人|次|万元|亿元|pt|pp|x|X)?)\s*[：:，,]?\s*(.+)$/;
 
-/** `42% 激活率` → { value: "42%", label: "激活率" }. */
+/** `42% 激活率` → { value: "42%", label: "激活率" }; `42% 激活率｜口径说明` adds note. */
 function parseMetric(text) {
   const match = String(text).match(METRIC_PATTERN);
   if (!match) return null;
   const value = match[1].trim();
-  const label = match[2].trim();
+  const [labelPart, ...noteParts] = match[2].split(/[｜|]/);
+  const label = labelPart.trim();
+  const note = noteParts.join("｜").trim();
   if (!/\d/.test(value) || label.length < 2 || label.length > 22) return null;
-  return { value, label };
+  return note ? { value, label, note } : { value, label };
 }
 
 /** A bullet list that is really a row of numbers becomes metric cards. */
@@ -260,8 +263,15 @@ function sectionSlides(heading, blocks, order = 1) {
   let lead = "";
   let callout = null;
 
-  // The first paragraph is the page's one-sentence takeaway, if it is short.
-  if (blocks.length > 0 && blocks[0].type === "para" && stripInline(blocks[0].text).length <= LEAD_MAX) {
+  // The first paragraph is the page's one-sentence takeaway. It can be a bit
+  // longer when the rest of the page is a flow, a table or a chart.
+  const richNeighbour =
+    blocks[1] && ["steps", "table", "chart", "card"].includes(blocks[1].type);
+  if (
+    blocks.length > 0 &&
+    blocks[0].type === "para" &&
+    (stripInline(blocks[0].text).length <= LEAD_MAX || richNeighbour)
+  ) {
     lead = stripInline(blocks.shift().text);
   }
 
@@ -371,9 +381,12 @@ function sectionSlides(heading, blocks, order = 1) {
   flushCards();
 
   if (slides.length === 0) {
-    if (lead) {
-      slides.push({ layout: "quote", title: heading, quote: { text: lead } });
-      lead = "";
+    const quoteText = lead || callout?.text || "";
+    if (quoteText) {
+      // A section that is only one sentence is a pull quote, not an empty page.
+      slides.push({ layout: "quote", title: heading, quote: { text: quoteText } });
+      if (lead) lead = "";
+      else callout = null;
     } else {
       slides.push({ layout: "bullets", title: heading, bullets: ["未提供"] });
     }
@@ -443,10 +456,23 @@ export function parseDeckMarkdown(markdown, options = {}) {
   const slides = [];
   parsed.forEach((section, sectionIndex) => {
     if (section.blocks.length === 0) return;
+    // `## 结尾 / 致谢` closes the deck instead of adding another content page.
+    if (CLOSING_HEADING.test(section.heading)) {
+      const paragraphs = section.blocks
+        .filter((block) => block.type === "para")
+        .map((block) => block.text);
+      slides.push({
+        layout: "closing",
+        title: paragraphs[0] ?? section.heading,
+        subtitle: paragraphs[1] ?? "",
+      });
+      return;
+    }
     slides.push(...sectionSlides(section.heading, section.blocks, sectionIndex + 1));
   });
 
-  const agenda = sections.length >= 5
+  // A contents page only helps when it still fits on one page.
+  const agenda = sections.length >= 5 && sections.length <= 8
     ? [{ layout: "agenda", title: "目录", items: sections.map((section) => section.heading) }]
     : [];
 
