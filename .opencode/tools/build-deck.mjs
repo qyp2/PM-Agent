@@ -60,6 +60,7 @@ if (options.help) {
       "  --spec      JSON deck spec (title/subtitle/slides[])",
       "  --out       output .pptx path (default: deliverables/<name>.pptx)",
       "  --template  optional .pptx to use as the visual master instead of pm-agent.potx",
+      "  --date      cover date line, e.g. \"路演版 · 2026年11月\" (default: today as 2026.11.24)",
       "  --title     document title when the markdown has no H1",
       "",
     ].join("\n"),
@@ -93,6 +94,12 @@ if (options.spec) {
 
 if (!Array.isArray(spec.slides) || spec.slides.length === 0) {
   fail("EMPTY_DECK", "the deck has no slides; check that the markdown has `##` sections.");
+}
+
+// Date stamp on the cover (2026.11.23). Override with --date for a fixed value.
+if (!spec.meta) {
+  const stamp = options.date ? String(options.date) : new Date().toISOString().slice(0, 10);
+  spec.meta = stamp.replaceAll("-", ".");
 }
 
 const outOption = options.out ? String(options.out) : `deliverables/${sourceName || "deck"}.pptx`;
